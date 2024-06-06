@@ -1,4 +1,4 @@
-import "./style.css"
+import "../styles.css"
 import SearchBar from "./components/search-bar"
 
 class App {

@@ -11,7 +11,7 @@ export default class SearchBar {
     this.searchBarElement.addEventListener("keyup", this.handleSearch)
   }
 
-  handleSearch = (event: KeyboardEvent) => {
+  handleSearch = () => {
     const searchValue = this.searchBarElement.value
     console.log(searchValue)
   }
