@@ -1,9 +1,9 @@
 import "../styles.css"
-import SearchBar from "./components/search-bar"
+import SearchBarComponent from "./components/search-bar"
 
 class App {
   static init() {
-    new SearchBar()
+    new SearchBarComponent()
   }
 }
 

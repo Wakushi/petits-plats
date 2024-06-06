@@ -1,4 +1,6 @@
-const recipes = [
+import { Recipe } from "../types/recipe.ts"
+
+export const recipes: Recipe[] = [
   {
     id: 1,
     image: "Recette01.jpg",
@@ -186,7 +188,7 @@ const recipes = [
       {
         ingredient: "Moutarde de Dijon",
         quantity: 1,
-        unite: "cuillères à soupe",
+        unit: "cuillères à soupe",
       },
     ],
     time: 45,
@@ -211,7 +213,7 @@ const recipes = [
       },
       {
         ingredient: "Oeuf",
-        quantity: "2",
+        quantity: 2,
       },
       {
         ingredient: "Crème fraîche",
@@ -257,7 +259,7 @@ const recipes = [
       },
       {
         ingredient: "Beurre",
-        quantity: "30",
+        quantity: 30,
         unit: "grammes",
       },
       {
@@ -279,7 +281,7 @@ const recipes = [
     ingredients: [
       {
         ingredient: "Noix",
-        quantity: "180",
+        quantity: 180,
         unit: "grammes",
       },
       {
@@ -298,7 +300,7 @@ const recipes = [
       },
       {
         ingredient: "Sucre en Poudre",
-        quantity: "110",
+        quantity: 110,
         unit: "grammes",
       },
       {
@@ -355,7 +357,7 @@ const recipes = [
     ingredients: [
       {
         ingredient: "Reblochon",
-        quantity: "1",
+        quantity: 1,
       },
       {
         ingredient: "Pommes de terre",
@@ -447,7 +449,7 @@ const recipes = [
       },
       {
         ingredient: "Eau",
-        quantity: "0.5",
+        quantity: 0.5,
         unit: "tasses",
       },
     ],

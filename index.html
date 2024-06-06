@@ -4,17 +4,91 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link href="./styles.css" rel="stylesheet" />
-    <title>Vite + TS</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Anton&family=Manrope:wght@200..800&display=swap"
+      rel="stylesheet"
+    />
+    <title>Les Petits Plats</title>
   </head>
   <body>
-    <div id="app">
-      <header>
-        <!-- <h1>Les Petits Plats</h1> -->
+    <div class="relative">
+      <header class="fixed top-0 left-0 w-full p-8">
+        <h1>Les Petits Plats</h1>
       </header>
       <main>
-        <div class="p-4">
-          <input type="text" id="searchBar" class="rounded text-black p-2" />
+        <!-- HERO BANNER -->
+        <div
+          class="hero flex flex-col items-center justify-center gap-[1.875rem]"
+        >
+          <h2
+            class="font-secondary text-[2.75rem] text-yellow-400 text-center max-w-[890px] drop-shadow-lg"
+          >
+            CHERCHEZ PARMI PLUS DE 1500 RECETTES DU QUOTIDIEN,SIMPLES ET
+            DÉLICIEUSES
+          </h2>
+          <div
+            class="flex items-center bg-white rounded-lg py-2 pl-4 pr-3 w-full max-w-[950px] h-[72px]"
+          >
+            <input
+              type="text"
+              id="searchBar"
+              class="w-full h-full border-0 focus:outline-none text-black"
+              placeholder="Rechercher une recette, un ingrédient, ..."
+            />
+            <div>
+              <img src="/images/icons/search-icon.png" alt="Search icon" />
+            </div>
+          </div>
         </div>
+        <!-- FILTERS -->
+        <div></div>
+        <!-- RECIPES RESULTS -->
+        <section id="recipes" class="p-10 flex">
+          <article
+            class="w-[380px] rounded-md flex flex-col overflow-hidden text-black"
+          >
+            <div class="relative overflow-hidden flex-1">
+              <div
+                class="rounded-xl py-2 px-4 absolute top-4 right-4 bg-yellow-300"
+              >
+                10min
+              </div>
+              <img
+                src="/images/recipes/Recette01.jpg"
+                alt="Recipe image"
+                class="w-full h-[250px] object-cover"
+              />
+            </div>
+            <div class="flex-2 bg-white flex flex-col py-[2rem] px-[1.5rem]">
+              <h3 class="font-secondary font-bold text-lg mb-[1.875rem]">
+                Limonade de Coco
+              </h3>
+              <h4 class="text-gray-600 font-semibold text-xs mb-[1rem]">
+                RECETTE
+              </h4>
+              <p class="text-sm mb-[2rem]">
+                Mettre les glaçons à votre goût dans le blender, Ajouter le lait
+                la crème de coco, le jus de 2 citrons et le sucre ensemble.
+                Mixer jusqu'à obtenir la consistance désirée.
+              </p>
+              <h4 class="text-gray-600 font-semibold text-xs mb-[1rem]">
+                INGRÉDIENTS
+              </h4>
+              <div
+                id="ingredients"
+                class="flex flex-wrap justify-between gap-[1.25rem]"
+              >
+                <div class="flex flex-col text-sm w-[45%]">
+                  <p>Lait de coco</p>
+                  <p class="text-gray-600">400ml</p>
+                </div>
+              </div>
+            </div>
+          </article>
+        </section>
       </main>
     </div>
     <script type="module" src="/src/main.ts"></script>
