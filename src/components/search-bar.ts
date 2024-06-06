@@ -1,4 +1,5 @@
 import { recipes } from "../../data/recipes"
+import { Recipe } from "../../types/recipe"
 
 export default class SearchBarComponent {
   searchBarElement: HTMLInputElement
@@ -16,13 +17,10 @@ export default class SearchBarComponent {
   handleSearch = () => {
     const searchValue = this.searchBarElement.value
     if (searchValue.length < 3) {
+      this.emitFilterEvent(recipes)
       return
     }
 
-    // Search in :
-    // - Title
-    // - Description
-    // - Ingredients
     const filteredRecipes = recipes.filter((recipe) => {
       const matchTitle = recipe.name
         .toLowerCase()
@@ -36,6 +34,14 @@ export default class SearchBarComponent {
       return matchTitle || matchDesc || matchIngredients
     })
 
-    console.log("Filtered: ", filteredRecipes)
+    this.emitFilterEvent(filteredRecipes)
+  }
+
+  emitFilterEvent(recipes: Recipe[]): void {
+    const event = new CustomEvent("filter", {
+      detail: recipes,
+    })
+
+    document.dispatchEvent(event)
   }
 }

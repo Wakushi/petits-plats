@@ -14,6 +14,13 @@ body {
   color: #fff;
 }
 
+img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 .font-secondary {
   font-family: "Anton", sans-serif;
 }

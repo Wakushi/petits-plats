@@ -1,4 +1,5 @@
 import { Recipe } from "../../types/recipe"
+import { capitalizeFirstLetter } from "../../lib/helpers"
 
 export default class RecipeCardComponent {
   recipe!: Recipe
@@ -10,15 +11,14 @@ export default class RecipeCardComponent {
   get template() {
     const { name, time, image, description, ingredients } = this.recipe
     return `
-    <article class="w-[380px] rounded-md flex flex-col overflow-hidden text-black">
-        <div class="relative overflow-hidden flex-1">
+    <article class="w-[380px] rounded-lg flex flex-col overflow-hidden text-black h-max">
+        <div class="relative overflow-hidden flex-1 max-h-[250px] gap-4">
             <div class="rounded-xl py-2 px-4 absolute top-4 right-4 bg-yellow-300">
                 ${time}min
             </div>
             <img
                 src="/images/recipes/${image}"
-                alt="Image of ${name}
-                class="w-full h-[250px] object-cover"
+                alt="Image of ${name}"
             />
         </div>
         <div class="flex-2 bg-white flex flex-col py-[2rem] px-[1.5rem]">
@@ -35,13 +35,18 @@ export default class RecipeCardComponent {
                 INGRÉDIENTS
             </h4>
             <div class="flex flex-wrap justify-between gap-[1.25rem]">
-                ${ingredients.map(({ ingredient, quantity, unit }) => {
-                  return `
+                ${ingredients
+                  .map(({ ingredient, quantity, unit }) => {
+                    return `
                     <div class="flex flex-col text-sm w-[45%]">
-                        <p>${ingredient}</p>
-                        <p class="text-gray-600">${quantity}${unit}</p>
-                    </div>`
-                })}
+                        <p>${capitalizeFirstLetter(ingredient)}</p>
+                        <p class="text-gray-600">${quantity ? quantity : ""} ${
+                      unit ? unit : ""
+                    }</p>
+                    </div>
+                  `
+                  })
+                  .join("")}
             </div>
         </div>
     </article>
