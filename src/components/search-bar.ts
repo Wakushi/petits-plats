@@ -23,11 +23,11 @@ export default class SearchBarComponent {
       return
     }
 
-    const filteredRecipes = this.getFilteredRecipesA(searchValue) // Make a branch with B algorithm
+    const filteredRecipes = this.getFilteredRecipes(searchValue) // Make a branch with B algorithm
     this.emitFilterEvent(filteredRecipes)
   }
 
-  getFilteredRecipesA(keyword: string): Recipe[] {
+  getFilteredRecipes(keyword: string): Recipe[] {
     const formattedKeyword = keyword.toLowerCase().replace(/\s+/g, "")
     const filteredRecipes: Recipe[] = []
     for (const recipe of this.recipes) {

@@ -1,4 +1,6 @@
 import { capitalize } from "../../lib/helpers"
+import { Recipe } from "../../types/recipe"
+import { RecipeRegistry } from "../recipe-registry"
 
 export class TagSelectComponent {
   type: "ingredients" | "appliance" | "ustensils"
@@ -14,7 +16,7 @@ export class TagSelectComponent {
     this._bindDOMElements()
     this._bindSelectToggle()
     this._bindTagSearchInput()
-    this._bindTagsEvents()
+    this._bindEvents()
   }
 
   private _bindDOMElements() {
@@ -55,11 +57,15 @@ export class TagSelectComponent {
     })
   }
 
-  private _bindTagsEvents(): void {
+  private _bindEvents(): void {
     document.addEventListener("tag:removed", (event: any) => {
       if (event.detail.type !== this.type) return
       this.tags.push(event.detail.tag)
       this._renderTagList(this.tags)
+    })
+
+    document.addEventListener("filter", (event: any) => {
+      this._updateTagsOnSearchInputChange(event.detail.recipes)
     })
   }
 
@@ -128,14 +134,14 @@ export class TagSelectComponent {
     this.tags = this.tags.filter((t) => t !== tag)
     this._renderTagList(this.tags)
     this.searchInputElement.value = ""
-    this.emitTagSelectedEvent(tag)
+    this._emitTagSelectedEvent(tag)
   }
 
   private _getTagListTemplate(tags: string[]): string {
     return tags
       .map(
         (tag) =>
-          `<li class="py-2 px-4 hover:bg-brand" id=${tag
+          `<li class="py-3 px-4 hover:bg-brand" id=${tag
             .split(" ")
             .join("-")}>${capitalize(tag)}</li>`
       )
@@ -153,7 +159,7 @@ export class TagSelectComponent {
     }
   }
 
-  emitTagSelectedEvent(tag: string): void {
+  private _emitTagSelectedEvent(tag: string): void {
     const event = new CustomEvent("tag:added", {
       detail: {
         tag,
@@ -162,5 +168,23 @@ export class TagSelectComponent {
     })
 
     document.dispatchEvent(event)
+  }
+
+  private _updateTagsOnSearchInputChange(recipes: Recipe[]): void {
+    const registry = new RecipeRegistry(recipes)
+    switch (this.type) {
+      case "ingredients":
+        this.tags = registry.ingredientTags
+        break
+      case "appliance":
+        this.tags = registry.applianceTags
+        break
+      case "ustensils":
+        this.tags = registry.ustensilTags
+        break
+      default:
+        break
+    }
+    this._renderTagList(this.tags)
   }
 }

@@ -28,7 +28,7 @@ export default class RecipeListComponent {
 
     if (!this.recipes.length && keyword.length >= 3) {
       this.recipeListElement.innerHTML = `
-        <div class="text-center text-2xl font-bold mt-8 text-black">
+        <div class="text-center text-2xl font-bold mt-8 text-black absolute">
           Aucune recette ne contient '${keyword}' Vous pouvez
           chercher « tarte aux pommes », « poisson », etc.
         </div>
