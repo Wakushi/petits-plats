@@ -12,11 +12,13 @@ export default class RecipeListComponent {
     ) as HTMLDivElement
     this.render()
     this.bindFilterEvent()
+    this.updateRecipeCount(this.recipes.length)
   }
 
   bindFilterEvent(): void {
     document.addEventListener("filter", (event: any) => {
       this.recipes = event.detail.recipes
+      this.updateRecipeCount(this.recipes.length)
       this.render(event.detail.keyword)
     })
   }
@@ -39,6 +41,8 @@ export default class RecipeListComponent {
       this.recipeListElement.innerHTML += recipeCard.template
     })
   }
-}
 
-// When creating the selects, create mapping to index recipe by filter of the select
+  updateRecipeCount(count: number): void {
+    document.querySelector("#recipeCount")!.textContent = count.toString()
+  }
+}

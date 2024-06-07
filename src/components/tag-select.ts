@@ -3,24 +3,42 @@ import { capitalize } from "../../lib/helpers"
 export class TagSelectComponent {
   type: "ingredients" | "appliance" | "ustensils"
   tags: string[] = []
-  customSelectElement: HTMLDivElement
-  selectHeadElement: HTMLDivElement
+  customSelectElement!: HTMLDivElement
+  selectHeadElement!: HTMLDivElement
 
   constructor(type: "ingredients" | "appliance" | "ustensils", tags: string[]) {
     this.type = type
     this.tags = tags
     this.renderSelect()
+    this.bindDOMElements()
+    this.bindSelectToggle()
+    this.bindTagSearchInput()
+  }
+
+  bindDOMElements() {
     this.customSelectElement = document.querySelector(
-      `#filter-${type}`
+      `#filter-${this.type}`
     ) as HTMLDivElement
     this.selectHeadElement = this.customSelectElement.querySelector(
       `#filter-${this.type}-head`
     ) as HTMLDivElement
-    this.bindSelectToggle()
   }
 
   bindSelectToggle() {
     this.selectHeadElement.addEventListener("click", () => this.toggleSelect())
+  }
+
+  bindTagSearchInput() {
+    const input = this.customSelectElement.querySelector(
+      `#filter-${this.type}-input`
+    ) as HTMLInputElement
+    input.addEventListener("input", () => {
+      const keyword = input.value.trim().toLowerCase()
+      const tags = this.tags.filter((tag) =>
+        tag.toLowerCase().includes(keyword)
+      )
+      this.renderTagList(tags)
+    })
   }
 
   toggleSelect() {
@@ -38,7 +56,7 @@ export class TagSelectComponent {
       `
     <div
       id="filter-${this.type}"
-      class="custom-select overflow-hidden h-[56px] transition-all ease-in duration-500 rounded-lg bg-white gap-4 text-black w-fit flex flex-col min-w-[150px] cursor-pointer"
+      class="custom-select overflow-hidden h-[56px] min-w-[300px] transition-all ease-in duration-500 rounded-lg bg-white gap-4 text-black w-fit flex flex-col cursor-pointer"
     >
       <!-- FILTER HEAD -->
       <div
@@ -49,37 +67,46 @@ export class TagSelectComponent {
         <i class="fas fa-chevron-down"></i>
       </div>
       <!-- FILTER CONTENT -->
-      <div class="pb-4">
-        <!-- TEXT INPUT -->
-        <div class="px-4">
-          <div
-            class="flex items-center bg-white border border-gray-300 rounded-lg  p-2 mb-4"
-          >
-            <input
-              type="text"
-              id="filter-${this.type}-input"
-              class="w-full h-full border-0 focus:outline-none text-black"
-            />
-            <div>
-              <img src="/images/icons/search.svg" alt="Search icon" />
-            </div>
+      <!-- TEXT INPUT -->
+      <div class="px-4">
+        <div
+          class="flex items-center bg-white border border-gray-300 rounded-lg p-2 mb-4"
+        >
+          <input
+            type="text"
+            id="filter-${this.type}-input"
+            class="w-full h-full border-0 focus:outline-none text-black"
+          />
+          <div>
+            <img src="/images/icons/search.svg" alt="Search icon" />
           </div>
         </div>
-        <!-- TAG LIST -->
-        <ul class="overflow-auto max-h-[200px]">
-          ${this.tags
-            .map(
-              (tag) =>
-                `<li class="py-2 px-4 hover:bg-brand" id=${tag}>${capitalize(
-                  tag
-                )}</li>`
-            )
-            .join("")}
-        </ul>
       </div>
+      <!-- TAG LIST -->
+      <ul id="tag-list-${this.type}" class="overflow-auto max-h-[200px]">
+        ${this.getTagListTemplate(this.tags)}
+      </ul>
     </div>
     `
     )
+  }
+
+  renderTagList(tags: string[]): void {
+    const tagList = this.customSelectElement.querySelector(
+      `#tag-list-${this.type}`
+    ) as HTMLUListElement
+    tagList.innerHTML = this.getTagListTemplate(tags)
+  }
+
+  getTagListTemplate(tags: string[]): string {
+    return tags
+      .map(
+        (tag) =>
+          `<li class="py-2 px-4 hover:bg-brand" id=${tag}>${capitalize(
+            tag
+          )}</li>`
+      )
+      .join("")
   }
 
   getFilterWording(): string {
