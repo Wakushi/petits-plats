@@ -10,24 +10,27 @@ export default class RecipeListComponent {
     this.recipeListElement = document.querySelector(
       "#recipes"
     ) as HTMLDivElement
-    this.render()
-    this.bindFilterEvent()
+    this._render()
+    this._bindEvents()
     this._updateRecipeCount(this.registry.filteredRecipes.length)
   }
 
-  bindFilterEvent(): void {
-    document.addEventListener("filter", (event: any) => {
-      this._onRecipesUpdate(event.detail.keyword)
+  private _bindEvents(): void {
+    document.addEventListener("stateChange", () => {
+      this._render()
     })
   }
 
-  render(keyword: string = ""): void {
+  private _render(): void {
     this.recipeListElement.innerHTML = ""
 
-    if (!this.registry.filteredRecipes.length && keyword.length >= 3) {
+    if (
+      !this.registry.filteredRecipes.length &&
+      this.registry.searchKeyword.length >= 3
+    ) {
       this.recipeListElement.innerHTML = `
         <div class="text-center text-2xl font-bold mt-8 text-black absolute">
-          Aucune recette ne contient '${keyword}' Vous pouvez
+          Aucune recette ne contient '${this.registry.searchKeyword}' Vous pouvez
           chercher « tarte aux pommes », « poisson », etc.
         </div>
       `
@@ -38,11 +41,8 @@ export default class RecipeListComponent {
       const recipeCard = new RecipeCardComponent(recipe)
       this.recipeListElement.innerHTML += recipeCard.template
     })
-  }
 
-  private _onRecipesUpdate(keyword: string): void {
     this._updateRecipeCount(this.registry.filteredRecipes.length)
-    this.render(keyword)
   }
 
   private _updateRecipeCount(count: number): void {

@@ -90,9 +90,10 @@ export class TagSelectComponent {
     document.addEventListener("tag:removed", (event: any) => {
       if (event.detail.type !== this.type) return
       this._renderTagList(this.tags)
+      this.registry.onTagRemoved()
     })
 
-    document.addEventListener("filter", () => {
+    document.addEventListener("stateChange", () => {
       this._renderTagList(this.tags)
     })
   }
@@ -150,19 +151,19 @@ export class TagSelectComponent {
   }
 
   private _renderTagList(tags: string[]): void {
-    const tagList = this.customSelectElement.querySelector(
+    const tagListDOM = this.customSelectElement.querySelector(
       `#tag-list-${this.type}`
     ) as HTMLUListElement
     tags.sort((a, b) => a.localeCompare(b))
-    tagList.innerHTML = this._getTagListTemplate(tags)
+    tagListDOM.innerHTML = this._getTagListTemplate(tags)
     this._bindTagSelection()
   }
 
   private _onSelectTag(tag: string): void {
-    this.registry.activeTags.push({
-      label: tag,
-      type: this.type,
-    })
+    this.registry.activeTags = [
+      ...this.registry.activeTags,
+      { type: this.type, label: tag },
+    ]
     this.tags = this.tags.filter((t) => t !== tag)
     this._renderTagList(this.tags)
     this.searchInputElement.value = ""
