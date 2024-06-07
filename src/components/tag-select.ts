@@ -1,17 +1,21 @@
+import { capitalize } from "../../lib/helpers"
+
 export class TagSelectComponent {
   type: "ingredients" | "appliance" | "ustensils"
+  tags: string[] = []
   customSelectElement: HTMLDivElement
   selectHeadElement: HTMLDivElement
 
-  constructor(type: "ingredients" | "appliance" | "ustensils") {
+  constructor(type: "ingredients" | "appliance" | "ustensils", tags: string[]) {
     this.type = type
+    this.tags = tags
+    this.renderSelect()
     this.customSelectElement = document.querySelector(
       `#filter-${type}`
     ) as HTMLDivElement
     this.selectHeadElement = this.customSelectElement.querySelector(
       `#filter-${this.type}-head`
     ) as HTMLDivElement
-
     this.bindSelectToggle()
   }
 
@@ -25,5 +29,67 @@ export class TagSelectComponent {
     if (!chevron) return
     chevron.classList.toggle("fa-chevron-down")
     chevron.classList.toggle("fa-chevron-up")
+  }
+
+  renderSelect(): void {
+    const filterList = document.querySelector("#filterList") as HTMLDivElement
+    filterList.insertAdjacentHTML(
+      "beforeend",
+      `
+    <div
+      id="filter-${this.type}"
+      class="custom-select overflow-hidden h-[56px] transition-all ease-in duration-500 rounded-lg bg-white gap-4 text-black w-fit flex flex-col min-w-[150px] cursor-pointer"
+    >
+      <!-- FILTER HEAD -->
+      <div
+        id="filter-${this.type}-head"
+        class="flex items-center justify-between p-4"
+      >
+        <span class="block">${this.getFilterWording()}</span>
+        <i class="fas fa-chevron-down"></i>
+      </div>
+      <!-- FILTER CONTENT -->
+      <div class="pb-4">
+        <!-- TEXT INPUT -->
+        <div class="px-4">
+          <div
+            class="flex items-center bg-white border border-gray-300 rounded-lg  p-2 mb-4"
+          >
+            <input
+              type="text"
+              id="filter-${this.type}-input"
+              class="w-full h-full border-0 focus:outline-none text-black"
+            />
+            <div>
+              <img src="/images/icons/search.svg" alt="Search icon" />
+            </div>
+          </div>
+        </div>
+        <!-- TAG LIST -->
+        <ul class="overflow-auto max-h-[200px]">
+          ${this.tags
+            .map(
+              (tag) =>
+                `<li class="py-2 px-4 hover:bg-brand" id=${tag}>${capitalize(
+                  tag
+                )}</li>`
+            )
+            .join("")}
+        </ul>
+      </div>
+    </div>
+    `
+    )
+  }
+
+  getFilterWording(): string {
+    switch (this.type) {
+      case "ingredients":
+        return "Ingrédients"
+      case "appliance":
+        return "Appareils"
+      case "ustensils":
+        return "Ustensiles"
+    }
   }
 }

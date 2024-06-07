@@ -23,6 +23,7 @@ export default class RecipeListComponent {
 
   render(keyword: string = ""): void {
     this.recipeListElement.innerHTML = ""
+
     if (!this.recipes.length && keyword.length >= 3) {
       this.recipeListElement.innerHTML = `
         <div class="text-center text-2xl font-bold mt-8 text-black">
@@ -32,6 +33,7 @@ export default class RecipeListComponent {
       `
       return
     }
+
     this.recipes.forEach((recipe) => {
       const recipeCard = new RecipeCardComponent(recipe)
       this.recipeListElement.innerHTML += recipeCard.template

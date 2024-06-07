@@ -40,7 +40,7 @@
           class="hero flex flex-col items-center justify-center gap-[1.875rem]"
         >
           <h2
-            class="font-secondary text-[2.75rem] text-yellow-400 text-center max-w-[890px] drop-shadow-lg"
+            class="font-secondary text-[2.75rem] text-brand text-center max-w-[890px] drop-shadow-lg"
           >
             CHERCHEZ PARMI PLUS DE 1500 RECETTES DU QUOTIDIEN,SIMPLES ET
             DÉLICIEUSES
@@ -62,36 +62,7 @@
         <!-- RECIPES -->
         <section class="p-20 flex flex-col justify-center gap-10">
           <!-- FILTERS -->
-          <div>
-            <div
-              id="filter-ingredients"
-              class="custom-select overflow-hidden h-[56px] transition-all ease-in duration-500 rounded-lg bg-white gap-4 text-black w-fit flex flex-col min-w-[150px] cursor-pointer"
-            >
-              <!-- FILTER HEAD -->
-              <div
-                id="filter-ingredients-head"
-                class="flex items-center justify-between p-4"
-              >
-                <span class="block">Ingrédients</span>
-                <i class="fas fa-chevron-down"></i>
-              </div>
-              <!-- FILTER CONTENT -->
-              <div class="p-4">
-                <div
-                  class="flex items-center bg-white border border-gray-300 rounded-lg p-2"
-                >
-                  <input
-                    type="text"
-                    id="searchBar"
-                    class="w-full h-full border-0 focus:outline-none text-black"
-                  />
-                  <div>
-                    <img src="/images/icons/search.svg" alt="Search icon" />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+          <div id="filterList" class="flex items-baseline gap-8"></div>
           <!-- RECIPES RESULTS -->
           <div id="recipes" class="flex flex-wrap justify-between gap-10"></div>
         </section>

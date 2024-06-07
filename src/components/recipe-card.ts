@@ -1,5 +1,5 @@
 import { Recipe } from "../../types/recipe"
-import { capitalizeFirstLetter } from "../../lib/helpers"
+import { capitalize } from "../../lib/helpers"
 
 export default class RecipeCardComponent {
   recipe: Recipe
@@ -13,7 +13,7 @@ export default class RecipeCardComponent {
     return `
     <article class="w-[380px] rounded-lg flex flex-col overflow-hidden text-black h-max shadow-lg">
         <div class="relative overflow-hidden flex-1 max-h-[250px] gap-4 z-[-1]">
-            <div class="rounded-xl py-2 px-4 absolute top-4 right-4 bg-yellow-300">
+            <div class="rounded-xl py-2 px-4 absolute top-4 right-4 bg-brand">
                 ${time}min
             </div>
             <img
@@ -39,7 +39,7 @@ export default class RecipeCardComponent {
                   .map(({ ingredient, quantity, unit }) => {
                     return `
                     <div class="flex flex-col text-sm w-[45%]">
-                        <p>${capitalizeFirstLetter(ingredient)}</p>
+                        <p>${capitalize(ingredient)}</p>
                         <p class="text-gray-600">${quantity ? quantity : ""} ${
                       unit ? unit : ""
                     }</p>

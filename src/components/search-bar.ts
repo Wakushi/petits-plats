@@ -21,20 +21,32 @@ export default class SearchBarComponent {
       return
     }
 
-    const filteredRecipes = recipes.filter((recipe) => {
-      const matchTitle = recipe.name
-        .toLowerCase()
-        .includes(searchValue.toLowerCase())
-      const matchDesc = recipe.description
-        .toLowerCase()
-        .includes(searchValue.toLowerCase())
-      const matchIngredients = recipe.ingredients.some((ingredient) =>
-        ingredient.ingredient.toLowerCase().includes(searchValue.toLowerCase())
-      )
-      return matchTitle || matchDesc || matchIngredients
-    })
-
+    const filteredRecipes = this.getFilteredRecipesA(searchValue)
     this.emitFilterEvent(filteredRecipes)
+  }
+
+  getFilteredRecipesA(keyword: string): Recipe[] {
+    const formattedKeyword = keyword.toLowerCase().replace(/\s+/g, "")
+    const filteredRecipes: Recipe[] = []
+    for (const recipe of recipes) {
+      const { name, description, ingredients } = recipe
+      if (name.toLowerCase().includes(formattedKeyword)) {
+        filteredRecipes.push(recipe)
+        continue
+      }
+      if (description.toLowerCase().includes(formattedKeyword)) {
+        filteredRecipes.push(recipe)
+        continue
+      }
+      if (
+        ingredients.some(({ ingredient }) =>
+          ingredient.toLowerCase().includes(formattedKeyword)
+        )
+      ) {
+        filteredRecipes.push(recipe)
+      }
+    }
+    return filteredRecipes
   }
 
   emitFilterEvent(recipes: Recipe[]): void {
