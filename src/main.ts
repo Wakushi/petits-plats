@@ -1,7 +1,7 @@
 import "../styles.css"
+import { recipes } from "../data/recipes"
 import RecipeListComponent from "./components/recipe-list"
 import SearchBarComponent from "./components/search-bar"
-import { recipes } from "../data/recipes"
 import { TagSelectComponent } from "./components/tag-select"
 import { RecipeRegistry } from "./recipe-registry"
 import { ActiveTagsListComponent } from "./components/active-tag-list"
@@ -9,12 +9,12 @@ import { ActiveTagsListComponent } from "./components/active-tag-list"
 class App {
   static init() {
     const registry = new RecipeRegistry(recipes)
-    new SearchBarComponent(registry.recipes)
-    new RecipeListComponent(registry.recipes)
-    new TagSelectComponent("ingredients", registry.ingredientTags)
-    new TagSelectComponent("appliance", registry.applianceTags)
-    new TagSelectComponent("ustensils", registry.ustensilTags)
-    new ActiveTagsListComponent()
+    new SearchBarComponent(registry)
+    new RecipeListComponent(registry)
+    new TagSelectComponent("ingredients", registry)
+    new TagSelectComponent("appliance", registry)
+    new TagSelectComponent("ustensils", registry)
+    new ActiveTagsListComponent(registry)
   }
 }
 

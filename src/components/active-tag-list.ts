@@ -1,15 +1,13 @@
 import { capitalize } from "../../lib/helpers"
-
-type ActiveTag = {
-  label: string
-  type: string
-}
+import { ActiveTag } from "../../types/tag"
+import { RecipeRegistry } from "../recipe-registry"
 
 export class ActiveTagsListComponent {
-  activeTags: ActiveTag[] = []
+  registry: RecipeRegistry
   activeTagsListElement!: HTMLDivElement
 
-  constructor() {
+  constructor(registry: RecipeRegistry) {
+    this.registry = registry
     this._bindDOMElements()
     this._bindTagsEvents()
   }
@@ -21,11 +19,7 @@ export class ActiveTagsListComponent {
   }
 
   private _bindTagsEvents(): void {
-    document.addEventListener("tag:added", (event: any) => {
-      this.activeTags.push({
-        label: event.detail.tag,
-        type: event.detail.type,
-      })
+    document.addEventListener("tag:added", () => {
       this._render()
     })
   }
@@ -33,7 +27,7 @@ export class ActiveTagsListComponent {
   private _render(): void {
     this.activeTagsListElement.innerHTML = ""
 
-    this.activeTags.forEach((tag) => {
+    this.registry.activeTags.forEach((tag) => {
       this.activeTagsListElement.insertAdjacentHTML(
         "beforeend",
         `
@@ -60,9 +54,20 @@ export class ActiveTagsListComponent {
   }
 
   private _onRemoveTag(tag: ActiveTag): void {
-    this.activeTags = this.activeTags.filter(
+    this.registry.activeTags = this.registry.activeTags.filter(
       (activeTag) => activeTag.label !== tag.label
     )
+    switch (tag.type) {
+      case "ingredients":
+        this.registry.ingredientTags.push(tag.label)
+        break
+      case "appliance":
+        this.registry.applianceTags.push(tag.label)
+        break
+      case "ustensils":
+        this.registry.ustensilTags.push(tag.label)
+        break
+    }
     this._emitTagRemovedEvent(tag)
     this._render()
   }
@@ -70,11 +75,9 @@ export class ActiveTagsListComponent {
   private _emitTagRemovedEvent(tag: ActiveTag): void {
     const event = new CustomEvent("tag:removed", {
       detail: {
-        tag: tag.label,
         type: tag.type,
       },
     })
-
     document.dispatchEvent(event)
   }
 }

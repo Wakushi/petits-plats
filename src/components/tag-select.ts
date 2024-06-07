@@ -1,17 +1,19 @@
 import { capitalize } from "../../lib/helpers"
-import { Recipe } from "../../types/recipe"
 import { RecipeRegistry } from "../recipe-registry"
 
 export class TagSelectComponent {
   type: "ingredients" | "appliance" | "ustensils"
-  tags: string[] = []
+  registry: RecipeRegistry
   customSelectElement!: HTMLDivElement
   selectHeadElement!: HTMLDivElement
   searchInputElement!: HTMLInputElement
 
-  constructor(type: "ingredients" | "appliance" | "ustensils", tags: string[]) {
+  constructor(
+    type: "ingredients" | "appliance" | "ustensils",
+    registry: RecipeRegistry
+  ) {
     this.type = type
-    this.tags = tags
+    this.registry = registry
     this._renderSelect()
     this._bindDOMElements()
     this._bindSelectToggle()
@@ -19,7 +21,34 @@ export class TagSelectComponent {
     this._bindEvents()
   }
 
-  private _bindDOMElements() {
+  get tags(): string[] {
+    switch (this.type) {
+      case "ingredients":
+        return this.registry.ingredientTags
+      case "appliance":
+        return this.registry.applianceTags
+      case "ustensils":
+        return this.registry.ustensilTags
+      default:
+        return []
+    }
+  }
+
+  set tags(tags: string[]) {
+    switch (this.type) {
+      case "ingredients":
+        this.registry.ingredientTags = tags
+        break
+      case "appliance":
+        this.registry.applianceTags = tags
+        break
+      case "ustensils":
+        this.registry.ustensilTags = tags
+        break
+    }
+  }
+
+  private _bindDOMElements(): void {
     this.customSelectElement = document.querySelector(
       `#filter-${this.type}`
     ) as HTMLDivElement
@@ -28,11 +57,11 @@ export class TagSelectComponent {
     ) as HTMLDivElement
   }
 
-  private _bindSelectToggle() {
+  private _bindSelectToggle(): void {
     this.selectHeadElement.addEventListener("click", () => this._toggleSelect())
   }
 
-  private _bindTagSearchInput() {
+  private _bindTagSearchInput(): void {
     this.searchInputElement = this.customSelectElement.querySelector(
       `#filter-${this.type}-input`
     ) as HTMLInputElement
@@ -45,7 +74,7 @@ export class TagSelectComponent {
     })
   }
 
-  private _bindTagSelection() {
+  private _bindTagSelection(): void {
     const tags = this.customSelectElement.querySelectorAll("li")
     tags.forEach((tag) => {
       tag.addEventListener("click", (event) => {
@@ -60,16 +89,15 @@ export class TagSelectComponent {
   private _bindEvents(): void {
     document.addEventListener("tag:removed", (event: any) => {
       if (event.detail.type !== this.type) return
-      this.tags.push(event.detail.tag)
       this._renderTagList(this.tags)
     })
 
-    document.addEventListener("filter", (event: any) => {
-      this._updateTagsOnSearchInputChange(event.detail.recipes)
+    document.addEventListener("filter", () => {
+      this._renderTagList(this.tags)
     })
   }
 
-  private _toggleSelect() {
+  private _toggleSelect(): void {
     this.customSelectElement.classList.toggle("open")
     const chevron = this.customSelectElement.querySelector(".fas")
     if (!chevron) return
@@ -131,10 +159,14 @@ export class TagSelectComponent {
   }
 
   private _onSelectTag(tag: string): void {
+    this.registry.activeTags.push({
+      label: tag,
+      type: this.type,
+    })
     this.tags = this.tags.filter((t) => t !== tag)
     this._renderTagList(this.tags)
     this.searchInputElement.value = ""
-    this._emitTagSelectedEvent(tag)
+    this._emitTagSelectedEvent()
   }
 
   private _getTagListTemplate(tags: string[]): string {
@@ -159,32 +191,8 @@ export class TagSelectComponent {
     }
   }
 
-  private _emitTagSelectedEvent(tag: string): void {
-    const event = new CustomEvent("tag:added", {
-      detail: {
-        tag,
-        type: this.type,
-      },
-    })
-
-    document.dispatchEvent(event)
-  }
-
-  private _updateTagsOnSearchInputChange(recipes: Recipe[]): void {
-    const registry = new RecipeRegistry(recipes)
-    switch (this.type) {
-      case "ingredients":
-        this.tags = registry.ingredientTags
-        break
-      case "appliance":
-        this.tags = registry.applianceTags
-        break
-      case "ustensils":
-        this.tags = registry.ustensilTags
-        break
-      default:
-        break
-    }
-    this._renderTagList(this.tags)
+  private _emitTagSelectedEvent(): void {
+    // Could be moved to Registry as a state change event
+    document.dispatchEvent(new CustomEvent("tag:added"))
   }
 }

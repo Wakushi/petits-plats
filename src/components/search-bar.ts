@@ -1,36 +1,42 @@
 import { Recipe } from "../../types/recipe"
+import { RecipeRegistry } from "../recipe-registry"
 
 export default class SearchBarComponent {
-  recipes: Recipe[]
+  registry: RecipeRegistry
   searchBarElement: HTMLInputElement
 
-  constructor(recipes: Recipe[]) {
-    this.recipes = recipes
+  constructor(registry: RecipeRegistry) {
+    this.registry = registry
     this.searchBarElement = document.querySelector(
       "#searchBar"
     ) as HTMLInputElement
-    this.bindSearchBar()
+    this._bindSearchBar()
   }
 
-  bindSearchBar() {
-    this.searchBarElement.addEventListener("keyup", () => this.handleSearch())
+  private _bindSearchBar() {
+    this.searchBarElement.addEventListener("keyup", () =>
+      this._onSearchChange()
+    )
   }
 
-  handleSearch() {
+  private _onSearchChange() {
     const searchValue = this.searchBarElement.value
-    if (searchValue.length < 3) {
-      this.emitFilterEvent(this.recipes)
+    if (searchValue.length === 2) {
+      this.registry.filteredRecipes = this.registry.recipes
+      this._emitFilterEvent()
       return
     }
 
-    const filteredRecipes = this.getFilteredRecipes(searchValue) // Make a branch with B algorithm
-    this.emitFilterEvent(filteredRecipes)
+    this.registry.filteredRecipes =
+      this._getFilteredRecipesByKeyword(searchValue)
+    this._emitFilterEvent()
   }
 
-  getFilteredRecipes(keyword: string): Recipe[] {
+  // TODO - Make a branch with B algorithm
+  private _getFilteredRecipesByKeyword(keyword: string): Recipe[] {
     const formattedKeyword = keyword.toLowerCase().replace(/\s+/g, "")
     const filteredRecipes: Recipe[] = []
-    for (const recipe of this.recipes) {
+    for (const recipe of this.registry.recipes) {
       const { name, description, ingredientsText } = recipe
       if (name.toLowerCase().includes(formattedKeyword)) {
         filteredRecipes.push(recipe)
@@ -47,11 +53,10 @@ export default class SearchBarComponent {
     return filteredRecipes
   }
 
-  emitFilterEvent(recipes: Recipe[]): void {
+  private _emitFilterEvent(): void {
     const event = new CustomEvent("filter", {
       detail: {
         keyword: this.searchBarElement.value,
-        recipes,
       },
     })
 

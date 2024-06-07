@@ -1,7 +1,9 @@
 import { Recipe } from "../types/recipe"
+import { ActiveTag } from "../types/tag"
 
 export class RecipeRegistry {
-  public recipes: Recipe[]
+  private _recipes: Recipe[]
+  private _filteredRecipes: Recipe[] = []
 
   public recipesByIngredients: Map<string, Recipe[]> = new Map()
   public recipesByAppliances: Map<string, Recipe[]> = new Map()
@@ -11,9 +13,25 @@ export class RecipeRegistry {
   public applianceTags: string[] = []
   public ustensilTags: string[] = []
 
+  public activeTags: ActiveTag[] = []
+
   constructor(recipes: Recipe[]) {
-    this.recipes = this._getOptimizedRecipes(recipes)
-    this._register()
+    this._recipes = this._getOptimizedRecipes(recipes)
+    this._filteredRecipes = this._recipes
+    this._setTagsFromRecipes(this.filteredRecipes)
+  }
+
+  set filteredRecipes(filteredRecipes: Recipe[]) {
+    this._filteredRecipes = filteredRecipes
+    this._setTagsFromRecipes(filteredRecipes)
+  }
+
+  get filteredRecipes(): Recipe[] {
+    return this._filteredRecipes
+  }
+
+  get recipes(): Recipe[] {
+    return this._recipes
   }
 
   private _getOptimizedRecipes(recipe: Recipe[]): Recipe[] {
@@ -27,8 +45,12 @@ export class RecipeRegistry {
     return optimizedRecipes
   }
 
-  private _register() {
-    for (const recipe of this.recipes) {
+  private _setTagsFromRecipes(recipes: Recipe[]) {
+    this.recipesByIngredients = new Map()
+    this.recipesByAppliances = new Map()
+    this.recipesByUstensils = new Map()
+
+    for (const recipe of recipes) {
       const { ingredients, appliance, ustensils } = recipe
 
       for (const { ingredient } of ingredients) {

@@ -1,32 +1,30 @@
-import { Recipe } from "../../types/recipe"
 import RecipeCardComponent from "./recipe-card"
+import { RecipeRegistry } from "../recipe-registry"
 
 export default class RecipeListComponent {
   recipeListElement: HTMLDivElement
-  recipes: Recipe[]
+  registry: RecipeRegistry
 
-  constructor(recipes: Recipe[]) {
-    this.recipes = recipes
+  constructor(registry: RecipeRegistry) {
+    this.registry = registry
     this.recipeListElement = document.querySelector(
       "#recipes"
     ) as HTMLDivElement
     this.render()
     this.bindFilterEvent()
-    this.updateRecipeCount(this.recipes.length)
+    this._updateRecipeCount(this.registry.filteredRecipes.length)
   }
 
   bindFilterEvent(): void {
     document.addEventListener("filter", (event: any) => {
-      this.recipes = event.detail.recipes
-      this.updateRecipeCount(this.recipes.length)
-      this.render(event.detail.keyword)
+      this._onRecipesUpdate(event.detail.keyword)
     })
   }
 
   render(keyword: string = ""): void {
     this.recipeListElement.innerHTML = ""
 
-    if (!this.recipes.length && keyword.length >= 3) {
+    if (!this.registry.filteredRecipes.length && keyword.length >= 3) {
       this.recipeListElement.innerHTML = `
         <div class="text-center text-2xl font-bold mt-8 text-black absolute">
           Aucune recette ne contient '${keyword}' Vous pouvez
@@ -36,13 +34,18 @@ export default class RecipeListComponent {
       return
     }
 
-    this.recipes.forEach((recipe) => {
+    this.registry.filteredRecipes.forEach((recipe) => {
       const recipeCard = new RecipeCardComponent(recipe)
       this.recipeListElement.innerHTML += recipeCard.template
     })
   }
 
-  updateRecipeCount(count: number): void {
+  private _onRecipesUpdate(keyword: string): void {
+    this._updateRecipeCount(this.registry.filteredRecipes.length)
+    this.render(keyword)
+  }
+
+  private _updateRecipeCount(count: number): void {
     document.querySelector("#recipeCount")!.textContent = count.toString()
   }
 }
