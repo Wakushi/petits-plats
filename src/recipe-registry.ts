@@ -12,8 +12,19 @@ export class RecipeRegistry {
   public ustensilTags: string[] = []
 
   constructor(recipes: Recipe[]) {
-    this.recipes = recipes
+    this.recipes = this._getOptimizedRecipes(recipes)
     this._register()
+  }
+
+  private _getOptimizedRecipes(recipe: Recipe[]): Recipe[] {
+    const optimizedRecipes = recipe.map((recipe) => {
+      const { ingredients } = recipe
+      const stringifiedfIngredients = ingredients
+        .map(({ ingredient }) => ingredient.toLowerCase())
+        .join(" ")
+      return { ...recipe, ingredientsText: stringifiedfIngredients }
+    })
+    return optimizedRecipes
   }
 
   private _register() {

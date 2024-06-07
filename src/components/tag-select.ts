@@ -57,6 +57,7 @@ export class TagSelectComponent {
 
   private _bindTagsEvents(): void {
     document.addEventListener("tag:removed", (event: any) => {
+      if (event.detail.type !== this.type) return
       this.tags.push(event.detail.tag)
       this._renderTagList(this.tags)
     })
@@ -118,6 +119,7 @@ export class TagSelectComponent {
     const tagList = this.customSelectElement.querySelector(
       `#tag-list-${this.type}`
     ) as HTMLUListElement
+    tags.sort((a, b) => a.localeCompare(b))
     tagList.innerHTML = this._getTagListTemplate(tags)
     this._bindTagSelection()
   }
@@ -155,6 +157,7 @@ export class TagSelectComponent {
     const event = new CustomEvent("tag:added", {
       detail: {
         tag,
+        type: this.type,
       },
     })
 

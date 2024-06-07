@@ -8,6 +8,7 @@ export type Recipe = {
   description: string
   appliance: string
   ustensils: string[]
+  ingredientsText?: string
 }
 
 export type Ingredient = {

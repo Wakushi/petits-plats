@@ -9,8 +9,8 @@ import { ActiveTagsListComponent } from "./components/active-tag-list"
 class App {
   static init() {
     const registry = new RecipeRegistry(recipes)
-    new SearchBarComponent()
-    new RecipeListComponent(recipes)
+    new SearchBarComponent(registry.recipes)
+    new RecipeListComponent(registry.recipes)
     new TagSelectComponent("ingredients", registry.ingredientTags)
     new TagSelectComponent("appliance", registry.applianceTags)
     new TagSelectComponent("ustensils", registry.ustensilTags)

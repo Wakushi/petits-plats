@@ -1,9 +1,11 @@
-import { recipes } from "../../data/recipes"
 import { Recipe } from "../../types/recipe"
 
 export default class SearchBarComponent {
+  recipes: Recipe[]
   searchBarElement: HTMLInputElement
-  constructor() {
+
+  constructor(recipes: Recipe[]) {
+    this.recipes = recipes
     this.searchBarElement = document.querySelector(
       "#searchBar"
     ) as HTMLInputElement
@@ -17,19 +19,19 @@ export default class SearchBarComponent {
   handleSearch() {
     const searchValue = this.searchBarElement.value
     if (searchValue.length < 3) {
-      this.emitFilterEvent(recipes)
+      this.emitFilterEvent(this.recipes)
       return
     }
 
-    const filteredRecipes = this.getFilteredRecipesA(searchValue)
+    const filteredRecipes = this.getFilteredRecipesA(searchValue) // Make a branch with B algorithm
     this.emitFilterEvent(filteredRecipes)
   }
 
   getFilteredRecipesA(keyword: string): Recipe[] {
     const formattedKeyword = keyword.toLowerCase().replace(/\s+/g, "")
     const filteredRecipes: Recipe[] = []
-    for (const recipe of recipes) {
-      const { name, description, ingredients } = recipe
+    for (const recipe of this.recipes) {
+      const { name, description, ingredientsText } = recipe
       if (name.toLowerCase().includes(formattedKeyword)) {
         filteredRecipes.push(recipe)
         continue
@@ -38,11 +40,7 @@ export default class SearchBarComponent {
         filteredRecipes.push(recipe)
         continue
       }
-      if (
-        ingredients.some(({ ingredient }) =>
-          ingredient.toLowerCase().includes(formattedKeyword)
-        )
-      ) {
+      if (ingredientsText!.toLowerCase().includes(formattedKeyword)) {
         filteredRecipes.push(recipe)
       }
     }

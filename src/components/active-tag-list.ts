@@ -1,7 +1,12 @@
 import { capitalize } from "../../lib/helpers"
 
+type ActiveTag = {
+  label: string
+  type: string
+}
+
 export class ActiveTagsListComponent {
-  activeTags: string[] = []
+  activeTags: ActiveTag[] = []
   activeTagsListElement!: HTMLDivElement
 
   constructor() {
@@ -17,7 +22,10 @@ export class ActiveTagsListComponent {
 
   private _bindTagsEvents(): void {
     document.addEventListener("tag:added", (event: any) => {
-      this.activeTags.push(event.detail.tag)
+      this.activeTags.push({
+        label: event.detail.tag,
+        type: event.detail.type,
+      })
       this._render()
     })
   }
@@ -29,11 +37,11 @@ export class ActiveTagsListComponent {
       this.activeTagsListElement.insertAdjacentHTML(
         "beforeend",
         `
-        <div class="flex items-center justify-between px-4 py-2 bg-white rounded-lg shadow-sm text-black bg-brand w-fit gap-4">
-          <span>${capitalize(tag)}</span>
+        <div class="flex items-center justify-between px-4 py-2 rounded-lg shadow-sm text-black bg-brand w-fit gap-4">
+          <span>${capitalize(tag.label)}</span>
           <button
             class="ml-2 text-sm text-gray-500"
-            data-tag="${tag}"
+            data-tag="${tag.label}"
           >
             <i class="fas fa-times text-black"></i>
           </button>
@@ -44,23 +52,26 @@ export class ActiveTagsListComponent {
     })
   }
 
-  private _bindRemoveTagEvent(tag: string): void {
+  private _bindRemoveTagEvent(tag: ActiveTag): void {
     const removeTagButton = this.activeTagsListElement.querySelector(
-      `button[data-tag="${tag}"]`
+      `button[data-tag="${tag.label}"]`
     ) as HTMLButtonElement
     removeTagButton.addEventListener("click", () => this._onRemoveTag(tag))
   }
 
-  private _onRemoveTag(tag: string): void {
-    this.activeTags = this.activeTags.filter((activeTag) => activeTag !== tag)
+  private _onRemoveTag(tag: ActiveTag): void {
+    this.activeTags = this.activeTags.filter(
+      (activeTag) => activeTag.label !== tag.label
+    )
     this._emitTagRemovedEvent(tag)
     this._render()
   }
 
-  private _emitTagRemovedEvent(tag: string): void {
+  private _emitTagRemovedEvent(tag: ActiveTag): void {
     const event = new CustomEvent("tag:removed", {
       detail: {
-        tag,
+        tag: tag.label,
+        type: tag.type,
       },
     })
 
