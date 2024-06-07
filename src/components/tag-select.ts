@@ -5,17 +5,19 @@ export class TagSelectComponent {
   tags: string[] = []
   customSelectElement!: HTMLDivElement
   selectHeadElement!: HTMLDivElement
+  searchInputElement!: HTMLInputElement
 
   constructor(type: "ingredients" | "appliance" | "ustensils", tags: string[]) {
     this.type = type
     this.tags = tags
-    this.renderSelect()
-    this.bindDOMElements()
-    this.bindSelectToggle()
-    this.bindTagSearchInput()
+    this._renderSelect()
+    this._bindDOMElements()
+    this._bindSelectToggle()
+    this._bindTagSearchInput()
+    this._bindTagsEvents()
   }
 
-  bindDOMElements() {
+  private _bindDOMElements() {
     this.customSelectElement = document.querySelector(
       `#filter-${this.type}`
     ) as HTMLDivElement
@@ -24,24 +26,43 @@ export class TagSelectComponent {
     ) as HTMLDivElement
   }
 
-  bindSelectToggle() {
-    this.selectHeadElement.addEventListener("click", () => this.toggleSelect())
+  private _bindSelectToggle() {
+    this.selectHeadElement.addEventListener("click", () => this._toggleSelect())
   }
 
-  bindTagSearchInput() {
-    const input = this.customSelectElement.querySelector(
+  private _bindTagSearchInput() {
+    this.searchInputElement = this.customSelectElement.querySelector(
       `#filter-${this.type}-input`
     ) as HTMLInputElement
-    input.addEventListener("input", () => {
-      const keyword = input.value.trim().toLowerCase()
+    this.searchInputElement.addEventListener("input", () => {
+      const keyword = this.searchInputElement.value.trim().toLowerCase()
       const tags = this.tags.filter((tag) =>
         tag.toLowerCase().includes(keyword)
       )
-      this.renderTagList(tags)
+      this._renderTagList(tags)
     })
   }
 
-  toggleSelect() {
+  private _bindTagSelection() {
+    const tags = this.customSelectElement.querySelectorAll("li")
+    tags.forEach((tag) => {
+      tag.addEventListener("click", (event) => {
+        const selectedTag = (event.target as HTMLLIElement).id
+          .split("-")
+          .join(" ")
+        this._onSelectTag(selectedTag)
+      })
+    })
+  }
+
+  private _bindTagsEvents(): void {
+    document.addEventListener("tag:removed", (event: any) => {
+      this.tags.push(event.detail.tag)
+      this._renderTagList(this.tags)
+    })
+  }
+
+  private _toggleSelect() {
     this.customSelectElement.classList.toggle("open")
     const chevron = this.customSelectElement.querySelector(".fas")
     if (!chevron) return
@@ -49,7 +70,7 @@ export class TagSelectComponent {
     chevron.classList.toggle("fa-chevron-up")
   }
 
-  renderSelect(): void {
+  private _renderSelect(): void {
     const filterList = document.querySelector("#filterList") as HTMLDivElement
     filterList.insertAdjacentHTML(
       "beforeend",
@@ -63,7 +84,7 @@ export class TagSelectComponent {
         id="filter-${this.type}-head"
         class="flex items-center justify-between p-4"
       >
-        <span class="block">${this.getFilterWording()}</span>
+        <span class="block">${this._getFilterWording()}</span>
         <i class="fas fa-chevron-down"></i>
       </div>
       <!-- FILTER CONTENT -->
@@ -83,33 +104,43 @@ export class TagSelectComponent {
         </div>
       </div>
       <!-- TAG LIST -->
-      <ul id="tag-list-${this.type}" class="overflow-auto max-h-[200px]">
-        ${this.getTagListTemplate(this.tags)}
-      </ul>
+      <ul id="tag-list-${this.type}" class="overflow-auto max-h-[200px]"></ul>
     </div>
     `
     )
+    if (!this.customSelectElement) {
+      this._bindDOMElements()
+    }
+    this._renderTagList(this.tags)
   }
 
-  renderTagList(tags: string[]): void {
+  private _renderTagList(tags: string[]): void {
     const tagList = this.customSelectElement.querySelector(
       `#tag-list-${this.type}`
     ) as HTMLUListElement
-    tagList.innerHTML = this.getTagListTemplate(tags)
+    tagList.innerHTML = this._getTagListTemplate(tags)
+    this._bindTagSelection()
   }
 
-  getTagListTemplate(tags: string[]): string {
+  private _onSelectTag(tag: string): void {
+    this.tags = this.tags.filter((t) => t !== tag)
+    this._renderTagList(this.tags)
+    this.searchInputElement.value = ""
+    this.emitTagSelectedEvent(tag)
+  }
+
+  private _getTagListTemplate(tags: string[]): string {
     return tags
       .map(
         (tag) =>
-          `<li class="py-2 px-4 hover:bg-brand" id=${tag}>${capitalize(
-            tag
-          )}</li>`
+          `<li class="py-2 px-4 hover:bg-brand" id=${tag
+            .split(" ")
+            .join("-")}>${capitalize(tag)}</li>`
       )
       .join("")
   }
 
-  getFilterWording(): string {
+  private _getFilterWording(): string {
     switch (this.type) {
       case "ingredients":
         return "Ingrédients"
@@ -118,5 +149,15 @@ export class TagSelectComponent {
       case "ustensils":
         return "Ustensiles"
     }
+  }
+
+  emitTagSelectedEvent(tag: string): void {
+    const event = new CustomEvent("tag:added", {
+      detail: {
+        tag,
+      },
+    })
+
+    document.dispatchEvent(event)
   }
 }
