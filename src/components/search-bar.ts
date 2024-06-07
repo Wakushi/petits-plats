@@ -11,10 +11,10 @@ export default class SearchBarComponent {
   }
 
   bindSearchBar() {
-    this.searchBarElement.addEventListener("keyup", this.handleSearch)
+    this.searchBarElement.addEventListener("keyup", () => this.handleSearch())
   }
 
-  handleSearch = () => {
+  handleSearch() {
     const searchValue = this.searchBarElement.value
     if (searchValue.length < 3) {
       this.emitFilterEvent(recipes)
@@ -39,7 +39,10 @@ export default class SearchBarComponent {
 
   emitFilterEvent(recipes: Recipe[]): void {
     const event = new CustomEvent("filter", {
-      detail: recipes,
+      detail: {
+        keyword: this.searchBarElement.value,
+        recipes,
+      },
     })
 
     document.dispatchEvent(event)

@@ -2,7 +2,7 @@ import { Recipe } from "../../types/recipe"
 import { capitalizeFirstLetter } from "../../lib/helpers"
 
 export default class RecipeCardComponent {
-  recipe!: Recipe
+  recipe: Recipe
 
   constructor(recipe: Recipe) {
     this.recipe = recipe
@@ -11,8 +11,8 @@ export default class RecipeCardComponent {
   get template() {
     const { name, time, image, description, ingredients } = this.recipe
     return `
-    <article class="w-[380px] rounded-lg flex flex-col overflow-hidden text-black h-max">
-        <div class="relative overflow-hidden flex-1 max-h-[250px] gap-4">
+    <article class="w-[380px] rounded-lg flex flex-col overflow-hidden text-black h-max shadow-lg">
+        <div class="relative overflow-hidden flex-1 max-h-[250px] gap-4 z-[-1]">
             <div class="rounded-xl py-2 px-4 absolute top-4 right-4 bg-yellow-300">
                 ${time}min
             </div>
