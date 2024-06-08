@@ -34,7 +34,9 @@ export class ActiveTagsListComponent {
       this.activeTagsListElement.insertAdjacentHTML(
         "beforeend",
         `
-        <div data-tag="${tag.label}" class="flex items-center justify-between px-4 py-2 rounded-lg shadow-sm cursor-pointer text-black bg-brand w-fit gap-4">
+        <div data-tag="${
+          tag.label
+        }" class="flex items-center justify-between px-4 py-2 rounded-lg shadow-sm cursor-pointer text-black bg-brand w-fit gap-4">
           <span>${capitalize(tag.label)}</span>
           <i class="fas fa-times text-black ml-2 text-sm"></i>
         </div>

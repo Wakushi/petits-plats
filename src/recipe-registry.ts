@@ -7,10 +7,6 @@ export class RecipeRegistry {
   private _filteredRecipes: Recipe[] = []
   private _activeTags: ActiveTag[] = []
 
-  private _recipesByIngredients: Map<string, Recipe[]> = new Map()
-  private _recipesByAppliances: Map<string, Recipe[]> = new Map()
-  private _recipesByUstensils: Map<string, Recipe[]> = new Map()
-
   public ingredientTags: string[] = []
   public applianceTags: string[] = []
   public ustensilTags: string[] = []
@@ -20,7 +16,7 @@ export class RecipeRegistry {
   constructor(recipes: Recipe[]) {
     this._recipes = this._getOptimizedRecipes(recipes)
     this._filteredRecipes = this._recipes
-    this._setTagsFromRecipes(this.filteredRecipes)
+    this._buildTagsFromRecipes(this.filteredRecipes)
   }
 
   get recipes(): Recipe[] {
@@ -33,8 +29,8 @@ export class RecipeRegistry {
 
   set filteredRecipes(filteredRecipes: Recipe[]) {
     this._filteredRecipes = filteredRecipes
-    this._setTagsFromRecipes(filteredRecipes)
-    this._emitStateChange([StateChangeType.RECIPES, StateChangeType.TAGS])
+    this._buildTagsFromRecipes(filteredRecipes)
+    this._onStateChange([StateChangeType.RECIPES, StateChangeType.TAGS])
   }
 
   get activeTags(): ActiveTag[] {
@@ -47,9 +43,9 @@ export class RecipeRegistry {
     this.filterRecipesByActiveTags(tags)
     this._activeTags = tags
     if (prevLength > newLength) {
-      this._emitStateChange([StateChangeType.TAGS_REMOVE])
+      this._onStateChange([StateChangeType.TAGS_REMOVE])
     } else {
-      this._emitStateChange([StateChangeType.TAGS])
+      this._onStateChange([StateChangeType.TAGS])
     }
   }
 
@@ -130,70 +126,48 @@ export class RecipeRegistry {
     return optimizedRecipes
   }
 
-  private _setTagsFromRecipes(recipes: Recipe[]) {
-    this._recipesByIngredients = new Map()
-    this._recipesByAppliances = new Map()
-    this._recipesByUstensils = new Map()
+  private _buildTagsFromRecipes(recipes: Recipe[]) {
+    const ingredientSet = new Set<string>()
+    const applianceSet = new Set<string>()
+    const ustensilSet = new Set<string>()
 
     for (const recipe of recipes) {
       const { ingredients, appliance, ustensils } = recipe
 
       for (const { ingredient } of ingredients) {
         const formattedIngredient = ingredient.toLowerCase()
-        if (!this._recipesByIngredients.has(formattedIngredient)) {
-          this._recipesByIngredients.set(formattedIngredient, [recipe])
-        } else {
-          const recipes = this._recipesByIngredients.get(formattedIngredient)
-          if (recipes) {
-            recipes.push(recipe)
-            this._recipesByIngredients.set(formattedIngredient, recipes)
-          }
+        if (!ingredientSet.has(formattedIngredient)) {
+          ingredientSet.add(formattedIngredient)
         }
       }
 
       const formattedAppliance = appliance.toLowerCase()
-      if (!this._recipesByAppliances.has(formattedAppliance)) {
-        this._recipesByAppliances.set(formattedAppliance, [recipe])
-      } else {
-        const recipes = this._recipesByAppliances.get(formattedAppliance)
-        if (recipes) {
-          recipes.push(recipe)
-          this._recipesByAppliances.set(formattedAppliance, recipes)
-        }
+      if (!applianceSet.has(formattedAppliance)) {
+        applianceSet.add(formattedAppliance)
       }
 
       for (const ustensil of ustensils) {
         const formattedUstensil = ustensil.toLowerCase()
-        if (!this._recipesByUstensils.has(formattedUstensil)) {
-          this._recipesByUstensils.set(formattedUstensil, [recipe])
-        } else {
-          const recipes = this._recipesByUstensils.get(formattedUstensil)
-          if (recipes) {
-            recipes.push(recipe)
-            this._recipesByUstensils.set(formattedUstensil, recipes)
-          }
+        if (!ustensilSet.has(formattedUstensil)) {
+          ustensilSet.add(formattedUstensil)
         }
       }
     }
 
-    this.ingredientTags = Array.from(this._recipesByIngredients.keys()).filter(
+    this.ingredientTags = Array.from(ingredientSet.keys()).filter(
       (ingredient) => {
         return !this.activeTags.some((tag) => tag.label === ingredient)
       }
     )
-    this.applianceTags = Array.from(this._recipesByAppliances.keys()).filter(
-      (appliance) => {
-        return !this.activeTags.some((tag) => tag.label === appliance)
-      }
-    )
-    this.ustensilTags = Array.from(this._recipesByUstensils.keys()).filter(
-      (ustensil) => {
-        return !this.activeTags.some((tag) => tag.label === ustensil)
-      }
-    )
+    this.applianceTags = Array.from(applianceSet.keys()).filter((appliance) => {
+      return !this.activeTags.some((tag) => tag.label === appliance)
+    })
+    this.ustensilTags = Array.from(ustensilSet.keys()).filter((ustensil) => {
+      return !this.activeTags.some((tag) => tag.label === ustensil)
+    })
   }
 
-  private _emitStateChange(state: StateChangeType[]): void {
+  private _onStateChange(state: StateChangeType[]): void {
     document.dispatchEvent(new CustomEvent("stateChange", { detail: state }))
   }
 }
