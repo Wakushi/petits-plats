@@ -44,7 +44,7 @@ export class RecipeRegistry {
   set activeTags(tags: ActiveTag[]) {
     const prevLength = this._activeTags.length
     const newLength = tags.length
-    this._filterRecipesByTags(tags)
+    this.filterRecipesByActiveTags(tags)
     this._activeTags = tags
     if (prevLength > newLength) {
       this._emitStateChange([StateChangeType.TAGS_REMOVE])
@@ -74,9 +74,49 @@ export class RecipeRegistry {
     this.filteredRecipes = filteredRecipes
   }
 
+  public filterRecipesByActiveTags(tags: ActiveTag[]): void {
+    if (!tags.length) {
+      this.filteredRecipes = this.filteredRecipes
+      return
+    }
+    const filteredRecipes: Recipe[] = []
+    for (const recipe of this.filteredRecipes) {
+      const discrepancies = []
+      for (const tag of tags) {
+        switch (tag.type) {
+          case "ingredients":
+            if (!recipe.ingredientsText!.includes(tag.label.toLowerCase())) {
+              discrepancies.push(tag)
+            }
+            break
+          case "appliance":
+            if (
+              !recipe.appliance.toLowerCase().includes(tag.label.toLowerCase())
+            ) {
+              discrepancies.push(tag)
+            }
+            break
+          case "ustensils":
+            if (
+              !recipe.ustensils
+                .map((ustensil) => ustensil.toLowerCase())
+                .includes(tag.label.toLowerCase())
+            ) {
+              discrepancies.push(tag)
+            }
+            break
+        }
+      }
+      if (!discrepancies.length) {
+        filteredRecipes.push(recipe)
+      }
+    }
+    this.filteredRecipes = filteredRecipes
+  }
+
   public onTagRemoved(): void {
     this.filterRecipesByKeyword(this.searchKeyword)
-    this._filterRecipesByTags(this.activeTags)
+    this.filterRecipesByActiveTags(this.activeTags)
   }
 
   private _getOptimizedRecipes(recipe: Recipe[]): Recipe[] {
@@ -136,46 +176,21 @@ export class RecipeRegistry {
       }
     }
 
-    this.ingredientTags = Array.from(this._recipesByIngredients.keys())
-    this.applianceTags = Array.from(this._recipesByAppliances.keys())
-    this.ustensilTags = Array.from(this._recipesByUstensils.keys())
-  }
-
-  private _filterRecipesByTags(tags: ActiveTag[]): void {
-    if (!tags.length) return
-    const filteredRecipes: Recipe[] = []
-    for (const recipe of this.filteredRecipes) {
-      let shouldAdd = false
-      for (const tag of tags) {
-        switch (tag.type) {
-          case "ingredients":
-            if (recipe.ingredientsText!.includes(tag.label.toLowerCase())) {
-              shouldAdd = true
-            }
-            break
-          case "appliance":
-            if (
-              recipe.appliance.toLowerCase().includes(tag.label.toLowerCase())
-            ) {
-              shouldAdd = true
-            }
-            break
-          case "ustensils":
-            if (
-              recipe.ustensils
-                .map((ustensil) => ustensil.toLowerCase())
-                .includes(tag.label.toLowerCase())
-            ) {
-              shouldAdd = true
-            }
-            break
-        }
+    this.ingredientTags = Array.from(this._recipesByIngredients.keys()).filter(
+      (ingredient) => {
+        return !this.activeTags.some((tag) => tag.label === ingredient)
       }
-      if (shouldAdd) {
-        filteredRecipes.push(recipe)
+    )
+    this.applianceTags = Array.from(this._recipesByAppliances.keys()).filter(
+      (appliance) => {
+        return !this.activeTags.some((tag) => tag.label === appliance)
       }
-    }
-    this.filteredRecipes = filteredRecipes
+    )
+    this.ustensilTags = Array.from(this._recipesByUstensils.keys()).filter(
+      (ustensil) => {
+        return !this.activeTags.some((tag) => tag.label === ustensil)
+      }
+    )
   }
 
   private _emitStateChange(state: StateChangeType[]): void {

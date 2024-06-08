@@ -34,14 +34,9 @@ export class ActiveTagsListComponent {
       this.activeTagsListElement.insertAdjacentHTML(
         "beforeend",
         `
-        <div class="flex items-center justify-between px-4 py-2 rounded-lg shadow-sm text-black bg-brand w-fit gap-4">
+        <div data-tag="${tag.label}" class="flex items-center justify-between px-4 py-2 rounded-lg shadow-sm cursor-pointer text-black bg-brand w-fit gap-4">
           <span>${capitalize(tag.label)}</span>
-          <button
-            class="ml-2 text-sm text-gray-500"
-            data-tag="${tag.label}"
-          >
-            <i class="fas fa-times text-black"></i>
-          </button>
+          <i class="fas fa-times text-black ml-2 text-sm"></i>
         </div>
       `
       )
@@ -51,7 +46,7 @@ export class ActiveTagsListComponent {
 
   private _bindRemoveTagEvent(tag: ActiveTag): void {
     const removeTagButton = this.activeTagsListElement.querySelector(
-      `button[data-tag="${tag.label}"]`
+      `div[data-tag="${tag.label}"]`
     ) as HTMLButtonElement
     removeTagButton.addEventListener("click", () => this._onRemoveTag(tag))
   }

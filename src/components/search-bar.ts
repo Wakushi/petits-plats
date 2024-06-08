@@ -21,11 +21,13 @@ export default class SearchBarComponent {
   private _onSearchChange() {
     const searchValue = this.searchBarElement.value
     this.registry.searchKeyword = searchValue
-    if (searchValue.length === 2) {
+    if (searchValue.length < 3) {
       this.registry.filteredRecipes = this.registry.recipes
+      this.registry.filterRecipesByActiveTags(this.registry.activeTags)
       return
     }
 
     this.registry.filterRecipesByKeyword(searchValue)
+    this.registry.filterRecipesByActiveTags(this.registry.activeTags)
   }
 }
