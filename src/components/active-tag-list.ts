@@ -1,4 +1,5 @@
 import { capitalize } from "../../lib/helpers"
+import { StateChangeType } from "../../types/state"
 import { ActiveTag } from "../../types/tag"
 import { RecipeRegistry } from "../recipe-registry"
 
@@ -19,8 +20,10 @@ export class ActiveTagsListComponent {
   }
 
   private _bindTagsEvents(): void {
-    document.addEventListener("tag:added", () => {
-      this._render()
+    document.addEventListener("stateChange", (event: any) => {
+      if (event.detail.includes(StateChangeType.TAGS)) {
+        this._render()
+      }
     })
   }
 
@@ -68,16 +71,6 @@ export class ActiveTagsListComponent {
         this.registry.ustensilTags.push(tag.label)
         break
     }
-    this._emitTagRemovedEvent(tag)
     this._render()
-  }
-
-  private _emitTagRemovedEvent(tag: ActiveTag): void {
-    const event = new CustomEvent("tag:removed", {
-      detail: {
-        type: tag.type,
-      },
-    })
-    document.dispatchEvent(event)
   }
 }

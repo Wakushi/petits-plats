@@ -1,5 +1,6 @@
 import { Recipe } from "../types/recipe"
 import { ActiveTag } from "../types/tag"
+import { StateChangeType } from "../types/state"
 
 export class RecipeRegistry {
   private _recipes: Recipe[]
@@ -33,7 +34,7 @@ export class RecipeRegistry {
   set filteredRecipes(filteredRecipes: Recipe[]) {
     this._filteredRecipes = filteredRecipes
     this._setTagsFromRecipes(filteredRecipes)
-    this._emitStateChange()
+    this._emitStateChange([StateChangeType.RECIPES, StateChangeType.TAGS])
   }
 
   get activeTags(): ActiveTag[] {
@@ -41,9 +42,15 @@ export class RecipeRegistry {
   }
 
   set activeTags(tags: ActiveTag[]) {
+    const prevLength = this._activeTags.length
+    const newLength = tags.length
     this._filterRecipesByTags(tags)
     this._activeTags = tags
-    this._emitStateChange()
+    if (prevLength > newLength) {
+      this._emitStateChange([StateChangeType.TAGS_REMOVE])
+    } else {
+      this._emitStateChange([StateChangeType.TAGS])
+    }
   }
 
   // Make branch with alt implementation
@@ -171,7 +178,7 @@ export class RecipeRegistry {
     this.filteredRecipes = filteredRecipes
   }
 
-  private _emitStateChange(): void {
-    document.dispatchEvent(new CustomEvent("stateChange"))
+  private _emitStateChange(state: StateChangeType[]): void {
+    document.dispatchEvent(new CustomEvent("stateChange", { detail: state }))
   }
 }

@@ -1,5 +1,6 @@
 import RecipeCardComponent from "./recipe-card"
 import { RecipeRegistry } from "../recipe-registry"
+import { StateChangeType } from "../../types/state"
 
 export default class RecipeListComponent {
   recipeListElement: HTMLDivElement
@@ -16,8 +17,10 @@ export default class RecipeListComponent {
   }
 
   private _bindEvents(): void {
-    document.addEventListener("stateChange", () => {
-      this._render()
+    document.addEventListener("stateChange", (event: any) => {
+      if (event.detail.includes(StateChangeType.RECIPES)) {
+        this._render()
+      }
     })
   }
 

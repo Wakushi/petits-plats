@@ -1,4 +1,5 @@
 import { capitalize } from "../../lib/helpers"
+import { StateChangeType } from "../../types/state"
 import { RecipeRegistry } from "../recipe-registry"
 
 export class TagSelectComponent {
@@ -87,14 +88,13 @@ export class TagSelectComponent {
   }
 
   private _bindEvents(): void {
-    document.addEventListener("tag:removed", (event: any) => {
-      if (event.detail.type !== this.type) return
-      this._renderTagList(this.tags)
-      this.registry.onTagRemoved()
-    })
-
-    document.addEventListener("stateChange", () => {
-      this._renderTagList(this.tags)
+    document.addEventListener("stateChange", (event: any) => {
+      if (event.detail.includes(StateChangeType.TAGS)) {
+        this._renderTagList(this.tags)
+      }
+      if (event.detail.includes(StateChangeType.TAGS_REMOVE)) {
+        this.registry.onTagRemoved()
+      }
     })
   }
 
@@ -167,7 +167,6 @@ export class TagSelectComponent {
     this.tags = this.tags.filter((t) => t !== tag)
     this._renderTagList(this.tags)
     this.searchInputElement.value = ""
-    this._emitTagSelectedEvent()
   }
 
   private _getTagListTemplate(tags: string[]): string {
@@ -190,10 +189,5 @@ export class TagSelectComponent {
       case "ustensils":
         return "Ustensiles"
     }
-  }
-
-  private _emitTagSelectedEvent(): void {
-    // Could be moved to Registry as a state change event
-    document.dispatchEvent(new CustomEvent("tag:added"))
   }
 }
