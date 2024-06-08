@@ -52,22 +52,19 @@ export class RecipeRegistry {
   // Make branch with alt implementation
   public filterRecipesByKeyword(keyword: string): void {
     const formattedKeyword = keyword.toLowerCase().replace(/\s+/g, "")
-    const filteredRecipes: Recipe[] = []
-    for (const recipe of this.recipes) {
+    this.filteredRecipes = this.recipes.filter((recipe) => {
       const { name, description, ingredientsText } = recipe
       if (name.toLowerCase().includes(formattedKeyword)) {
-        filteredRecipes.push(recipe)
-        continue
+        return true
       }
       if (description.toLowerCase().includes(formattedKeyword)) {
-        filteredRecipes.push(recipe)
-        continue
+        return true
       }
       if (ingredientsText!.toLowerCase().includes(formattedKeyword)) {
-        filteredRecipes.push(recipe)
+        return true
       }
-    }
-    this.filteredRecipes = filteredRecipes
+      return false
+    })
   }
 
   public filterRecipesByActiveTags(tags: ActiveTag[]): void {
