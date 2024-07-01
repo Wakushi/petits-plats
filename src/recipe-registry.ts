@@ -49,7 +49,6 @@ export class RecipeRegistry {
     }
   }
 
-  // Make branch with alt implementation
   public filterRecipesByKeyword(keyword: string): void {
     const formattedKeyword = keyword.toLowerCase().replace(/\s+/g, "")
     const filteredRecipes: Recipe[] = []

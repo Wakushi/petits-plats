@@ -49,6 +49,8 @@ export default class RecipeListComponent {
   }
 
   private _updateRecipeCount(count: number): void {
-    document.querySelector("#recipeCount")!.textContent = count.toString()
+    document.querySelector(
+      "#recipeCount"
+    )!.textContent = `${count.toString()} recette${count > 1 ? "s" : ""}`
   }
 }

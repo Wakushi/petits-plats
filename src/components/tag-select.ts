@@ -115,7 +115,6 @@ export class TagSelectComponent {
       id="filter-${this.type}"
       class="custom-select overflow-hidden h-[56px] min-w-[300px] transition-all ease-in duration-500 rounded-lg bg-white gap-4 text-black w-fit flex flex-col cursor-pointer"
     >
-      <!-- FILTER HEAD -->
       <div
         id="filter-${this.type}-head"
         class="flex items-center justify-between p-4"
@@ -123,8 +122,6 @@ export class TagSelectComponent {
         <span class="block">${this._getFilterWording()}</span>
         <i class="fas fa-chevron-down"></i>
       </div>
-      <!-- FILTER CONTENT -->
-      <!-- TEXT INPUT -->
       <div class="px-4">
         <div
           class="flex items-center bg-white border border-gray-300 rounded-lg p-2 mb-4"
@@ -139,7 +136,6 @@ export class TagSelectComponent {
           </div>
         </div>
       </div>
-      <!-- TAG LIST -->
       <ul id="tag-list-${this.type}" class="overflow-auto max-h-[200px]"></ul>
     </div>
     `
