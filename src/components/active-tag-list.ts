@@ -57,17 +57,5 @@ export class ActiveTagsListComponent {
     this.registry.activeTags = this.registry.activeTags.filter(
       (activeTag) => activeTag.label !== tag.label
     )
-    switch (tag.type) {
-      case "ingredients":
-        this.registry.ingredientTags.push(tag.label)
-        break
-      case "appliance":
-        this.registry.applianceTags.push(tag.label)
-        break
-      case "ustensils":
-        this.registry.ustensilTags.push(tag.label)
-        break
-    }
-    this._render()
   }
 }
