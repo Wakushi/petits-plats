@@ -9,12 +9,9 @@ export class TagSelectComponent {
   selectHeadElement!: HTMLDivElement
   searchInputElement!: HTMLInputElement
 
-  constructor(
-    type: "ingredients" | "appliance" | "ustensils",
-    registry: RecipeRegistry
-  ) {
+  constructor(type: "ingredients" | "appliance" | "ustensils") {
     this.type = type
-    this.registry = registry
+    this.registry = RecipeRegistry.getInstance()
     this._renderSelect()
     this._bindDOMElements()
     this._bindSelectToggle()

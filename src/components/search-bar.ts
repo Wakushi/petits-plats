@@ -4,8 +4,8 @@ export default class SearchBarComponent {
   registry: RecipeRegistry
   searchBarElement: HTMLInputElement
 
-  constructor(registry: RecipeRegistry) {
-    this.registry = registry
+  constructor() {
+    this.registry = RecipeRegistry.getInstance()
     this.searchBarElement = document.querySelector(
       "#searchBar"
     ) as HTMLInputElement
@@ -21,7 +21,7 @@ export default class SearchBarComponent {
   private _onSearchChange() {
     const searchValue = this.searchBarElement.value
     this.registry.searchKeyword = searchValue
-    
+
     if (searchValue.length < 3) {
       this.registry.filteredRecipes = this.registry.recipes
       this.registry.filterRecipesByActiveTags(this.registry.activeTags)

@@ -1,8 +1,11 @@
 import { Recipe } from "../types/recipe"
 import { ActiveTag } from "../types/tag"
 import { StateChangeType } from "../types/state"
+import { recipes } from "../data/recipes"
 
 export class RecipeRegistry {
+  private static _instance: RecipeRegistry
+
   private _recipes: Recipe[]
   private _filteredRecipes: Recipe[] = []
   private _activeTags: ActiveTag[] = []
@@ -13,10 +16,17 @@ export class RecipeRegistry {
 
   public searchKeyword: string = ""
 
-  constructor(recipes: Recipe[]) {
+  private constructor(recipes: Recipe[]) {
     this._recipes = this._getOptimizedRecipes(recipes)
     this._filteredRecipes = this._recipes
     this._buildTagsFromRecipes(this.filteredRecipes)
+  }
+
+  public static getInstance(): RecipeRegistry {
+    if (!RecipeRegistry._instance) {
+      RecipeRegistry._instance = new RecipeRegistry(recipes)
+    }
+    return RecipeRegistry._instance
   }
 
   get recipes(): Recipe[] {

@@ -7,8 +7,8 @@ export class ActiveTagsListComponent {
   registry: RecipeRegistry
   activeTagsListElement!: HTMLDivElement
 
-  constructor(registry: RecipeRegistry) {
-    this.registry = registry
+  constructor() {
+    this.registry = RecipeRegistry.getInstance()
     this._bindDOMElements()
     this._bindTagsEvents()
   }

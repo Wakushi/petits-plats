@@ -6,8 +6,8 @@ export default class RecipeListComponent {
   recipeListElement: HTMLDivElement
   registry: RecipeRegistry
 
-  constructor(registry: RecipeRegistry) {
-    this.registry = registry
+  constructor() {
+    this.registry = RecipeRegistry.getInstance()
     this.recipeListElement = document.querySelector(
       "#recipes"
     ) as HTMLDivElement
