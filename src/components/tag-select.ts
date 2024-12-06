@@ -110,7 +110,7 @@ export class TagSelectComponent {
       `
     <div
       id="filter-${this.type}"
-      class="custom-select overflow-hidden h-[56px] min-w-[300px] transition-all ease-in duration-500 rounded-lg bg-white gap-4 text-black w-fit flex flex-col cursor-pointer"
+      class="custom-select overflow-hidden h-[56px] min-w-[300px] hover:shadow-md transition-all ease-in duration-200 rounded-lg bg-white gap-4 text-black w-fit flex flex-col cursor-pointer"
     >
       <div
         id="filter-${this.type}-head"
